@@ -1,22 +1,30 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-"use client";
-import { NavLink, Outlet } from "react-router";
-import { useContext, useEffect } from "react";
+import { Button } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import { Link, NavLink, Outlet } from "react-router";
+import { nanoid } from "nanoid";
+import { useContext } from "react";
 import { AppContext } from "../../contexts/NoteContext";
-function Archive() {
-	const { archive, setHeader } = useContext(AppContext);
-	useEffect(() => {
-		setHeader("Archived Notes");
-	}, []);
+const Desktop = () => {
+	const id = nanoid();
+	const { notes } = useContext(AppContext);
 	return (
-		<main className='flex h-full'>
-			<section className='p-2 w-54 bg-gray-50 border-r border-gray-200'>
-				<div className='flex flex-col gap-2 overflow-y-auto h-full'>
-					{archive.map((item) => (
+		<main className='hidden md:flex h-full'>
+			<section className='p-4 md:w-54 bg-gray-50 border-r border-gray-200'>
+				<Button
+					component={Link}
+					to={`/notes/${id}?mode=create`}
+					fullWidth
+					radius='md'
+					leftSection={<IconPlus size={12} />}
+				>
+					Create New Note
+				</Button>
+				<div className='mt-4 flex flex-col gap-2 overflow-y-auto h-full'>
+					{notes.map((item) => (
 						<NavLink
 							key={item.id}
 							end
-							to={`/archive/${item.id}?mode=archive`}
+							to={`/notes/${item.id}?mode=view`}
 							className={({ isActive }) =>
 								isActive
 									? "flex flex-col gap-1 p-2 bg-blue-100 text-blue-800 transition-colors duration-200"
@@ -54,6 +62,6 @@ function Archive() {
 			<Outlet />
 		</main>
 	);
-}
+};
 
-export default Archive;
+export default Desktop;

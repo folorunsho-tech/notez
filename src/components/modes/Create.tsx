@@ -49,9 +49,8 @@ const Create = ({
 	const [opened, { open, close }] = useDisclosure(false);
 	const navigate = useNavigate();
 	const [title, setTitle] = useState<string | undefined>("");
-	const [ntags, setNTags] = useState<{ label: string; id: string }[]>([]);
-	const mapped = ntags.map((t) => t.label);
-	const [value, setValue] = useState<string[]>(mapped);
+	const [ntags, setNTags] = useState<string[]>([]);
+	const [value, setValue] = useState<string[]>(ntags);
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -72,7 +71,7 @@ const Create = ({
 	});
 
 	return (
-		<section className='flex flex-col p-3 pr-5 pb-1 border-gray-200 w-4/5 border-r '>
+		<section className='flex flex-col p-3 pr-5 pb-1 border-gray-200 md:w-4/5 border-r '>
 			<header className='flex flex-col justify-center gap-3 pb-4'>
 				<div className='flex justify-between items-end text-xl font-bold'>
 					<input
@@ -91,12 +90,12 @@ const Create = ({
 							</Text>
 						</div>
 						<div className='flex items-center gap-1'>
-							{ntags.map((tag) => (
+							{ntags.map((tag, index) => (
 								<span
-									key={tag.id}
+									key={index}
 									className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 								>
-									{tag.label}
+									{tag}
 								</span>
 							))}
 						</div>
@@ -255,7 +254,7 @@ const Create = ({
 						<MultiSelect
 							label='Add a tag'
 							placeholder='Pick tag'
-							data={tags.map((t) => t.label)}
+							data={tags}
 							value={value}
 							onChange={setValue}
 							searchable
@@ -267,11 +266,7 @@ const Create = ({
 						<Group>
 							<Button
 								onClick={() => {
-									const found = tags.map((t) => ({
-										id: t.id,
-										label: t.label,
-									}));
-									setNTags(found);
+									setNTags(value);
 									close();
 								}}
 							>

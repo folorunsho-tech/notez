@@ -17,23 +17,28 @@ const View = ({
 }) => {
 	const { getNote } = useContext(AppContext);
 	const [title, setTitle] = useState<string | undefined>("");
-	const [ntags, setNTags] = useState<{ label: string; id: string }[]>([]);
+	const [ntags, setNTags] = useState<string[]>([]);
 	const [content, setContent] = useState<string | undefined>("");
 	const [date, setDate] = useState<string | number | Date>("");
 	const [mNote, setMNote] = useState<any>();
 	useEffect(() => {
 		const note: Note | undefined = getNote(noteId) ?? undefined;
+		const newContent = `
+		<main style="font-family:sans-serif;">
+		${note?.content}
+		</main>
+		`;
 		setMNote(note);
 		setTitle(note?.title);
-		setContent(note?.content);
+		setContent(newContent);
 		setNTags(note?.tags ?? []);
 		setDate(note?.date ? new Date(note.date) : "");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [noteId]);
+	}, []);
 	return (
 		<section className='flex w-full'>
-			<section className='flex flex-col gap-4 w-4/5 border-r p-3 border-gray-200'>
-				<header className='flex flex-col justify-center gap-3 border-b border-gray-200 pb-4'>
+			<section className='flex flex-col gap-4 md:w-4/5 border-r p-3 border-gray-200 w-full'>
+				<header className='flex flex-col justify-center gap-3 border-b w-full border-gray-200 pb-4'>
 					<div className='flex justify-between items-end'>
 						<Text fw={700} fz={20}>
 							{title}
@@ -57,10 +62,10 @@ const View = ({
 						<div className='flex items-center gap-1'>
 							{ntags.map((tag) => (
 								<span
-									key={tag.id}
+									key={tag}
 									className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 								>
-									{tag.label}
+									{tag}
 								</span>
 							))}
 						</div>
@@ -85,7 +90,7 @@ const View = ({
 				</header>
 				<iframe srcDoc={content}></iframe>
 			</section>
-			<div className='space-y-4 p-3 w-full max-w-[12rem]'>
+			<div className='hidden md:block space-y-4 p-3 w-full max-w-[12rem]'>
 				<Archive note={mNote} />
 				<Delete note={mNote} />
 			</div>

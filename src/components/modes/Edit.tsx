@@ -51,11 +51,10 @@ const Edit = ({
 	const [opened, { open, close }] = useDisclosure(false);
 	const navigate = useNavigate();
 	const [title, setTitle] = useState<string | undefined>("");
-	const [ntags, setNTags] = useState<{ label: string; id: string }[]>([]);
-	const mapped = ntags.map((t) => t.label);
-	const [value, setValue] = useState<string[]>(mapped);
+	const [ntags, setNTags] = useState<string[]>([]);
 	const [econtent, setContent] = useState<string | undefined>("");
 	const [mNote, setMNote] = useState<any>(null);
+	const [value, setValue] = useState<string[]>(ntags);
 
 	const editor = useEditor({
 		extensions: [
@@ -83,7 +82,7 @@ const Edit = ({
 		setContent(note?.content);
 		setNTags(note?.tags ?? []);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [noteId]);
 	// Update editor content when econtent changes and editor is ready
 	useEffect(() => {
 		if (editor && econtent !== undefined) {
@@ -92,7 +91,7 @@ const Edit = ({
 	}, [editor, econtent]);
 	return (
 		<section className='flex w-full'>
-			<section className='flex flex-col p-3 pb-1 border-gray-200 w-4/5 border-r '>
+			<section className='flex flex-col p-3 pb-1 border-gray-200 md:w-4/5 w-full border-r '>
 				<header className='flex flex-col justify-center gap-3 pb-4'>
 					<div className='flex justify-between items-end text-xl font-bold'>
 						<input
@@ -113,10 +112,10 @@ const Edit = ({
 							<div className='flex items-center gap-1'>
 								{ntags.map((tag) => (
 									<span
-										key={tag.id}
+										key={tag}
 										className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 									>
-										{tag.label}
+										{tag}
 									</span>
 								))}
 							</div>
@@ -278,7 +277,7 @@ const Edit = ({
 							<MultiSelect
 								label='Add a tag'
 								placeholder='Pick tag'
-								data={tags.map((t) => t.label)}
+								data={tags}
 								value={value}
 								onChange={setValue}
 								searchable
@@ -290,15 +289,11 @@ const Edit = ({
 							<Group>
 								<Button
 									onClick={() => {
-										const found = tags.map((t) => ({
-											id: t.id,
-											label: t.label,
-										}));
-										setNTags(found);
+										setNTags(value);
 										close();
 									}}
 								>
-									Add tag(s)
+									Update tag(s)
 								</Button>
 								<Button onClick={close} color='black'>
 									Cancel
@@ -312,7 +307,7 @@ const Edit = ({
 					</Tabs>
 				</Modal>
 			</section>
-			<div className='space-y-4 p-3 w-full max-w-[12rem]'>
+			<div className='hidden md:block space-y-4 p-3 w-full max-w-[12rem]'>
 				<Archive note={mNote} />
 				<Delete note={mNote} />
 			</div>

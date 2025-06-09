@@ -15,7 +15,7 @@ const Search = () => {
 		const searchLower = search.toLowerCase();
 		return (
 			note?.title?.toLowerCase().includes(searchLower) ||
-			note?.tags.some((tag) => tag.label.toLowerCase().includes(searchLower)) ||
+			note?.tags.some((tag) => tag.toLowerCase().includes(searchLower)) ||
 			(note?.date &&
 				new Date(note?.date).toLocaleDateString().includes(searchLower))
 		);
@@ -34,10 +34,10 @@ const Search = () => {
 				<div className='flex gap-1 flex-wrap'>
 					{item.tags.map((tag) => (
 						<span
-							key={tag.id}
+							key={tag}
 							className='bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'
 						>
-							{tag.label}
+							{tag}
 						</span>
 					))}
 				</div>

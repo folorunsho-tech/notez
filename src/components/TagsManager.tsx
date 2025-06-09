@@ -3,7 +3,6 @@ import { Badge, Button, TextInput } from "@mantine/core";
 import { IconTagPlus, IconX } from "@tabler/icons-react";
 import { useState, useContext } from "react";
 import { AppContext } from "../contexts/NoteContext";
-import { nanoid } from "nanoid";
 const TagsManager = () => {
 	const { tags, deleteTag, addTag } = useContext(AppContext);
 	const [tag, setTag] = useState<string>("");
@@ -12,16 +11,14 @@ const TagsManager = () => {
 			className='p-2 space-y-6'
 			onSubmit={(e) => {
 				e.preventDefault();
-				addTag({
-					id: nanoid(7),
-					label: tag,
-				});
+				addTag(tag);
 				setTag("");
 			}}
 		>
 			<div className='flex gap-1 flex-wrap max-h-32 overflow-y-auto py-2 w-full'>
-				{tags.map((t) => (
+				{tags.map((tag, index) => (
 					<Badge
+						key={index}
 						variant='outline'
 						rightSection={
 							<IconX
@@ -29,12 +26,12 @@ const TagsManager = () => {
 								cursor='pointer'
 								size={14}
 								onClick={() => {
-									deleteTag(t);
+									deleteTag(tag);
 								}}
 							/>
 						}
 					>
-						{t.label}
+						{tag}
 					</Badge>
 				))}
 			</div>

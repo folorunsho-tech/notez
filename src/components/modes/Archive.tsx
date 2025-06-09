@@ -9,13 +9,15 @@ import { AppContext, type Note } from "../../contexts/NoteContext";
 
 const ArchiveV = ({
 	noteId,
+	mode,
 }: {
 	noteId: string | null;
+	mode: string;
 	setSearchParams?: (params: URLSearchParams) => void;
 }) => {
 	const { getNoteArchive } = useContext(AppContext);
 	const [title, setTitle] = useState<string | undefined>("");
-	const [ntags, setNTags] = useState<{ label: string; id: string }[]>([]);
+	const [ntags, setNTags] = useState<string[]>([]);
 	const [content, setContent] = useState<string | undefined>("");
 	const [date, setDate] = useState<string | number | Date>("");
 	const [mNote, setMNote] = useState<any>();
@@ -52,12 +54,12 @@ const ArchiveV = ({
 							</Text>
 						</div>
 						<div className='flex items-center gap-1'>
-							{ntags.map((tag) => (
+							{ntags.map((tag, index) => (
 								<span
-									key={tag.id}
+									key={index}
 									className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 								>
-									{tag.label}
+									{tag}
 								</span>
 							))}
 						</div>
@@ -84,7 +86,7 @@ const ArchiveV = ({
 			</section>
 			<div className='space-y-4 p-3 w-full max-w-[12rem]'>
 				{/* <Archive note={mNote} /> */}
-				<Delete note={mNote} />
+				<Delete note={mNote} mode={mode} />
 			</div>
 		</section>
 	);

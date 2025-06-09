@@ -7,15 +7,17 @@ import { useNavigate } from "react-router";
 
 const Delete = ({ note, mode }: { note: Note; mode?: string }) => {
 	const navigate = useNavigate();
-	const { deleteNote } = useContext(AppContext);
+	const { deleteNote, deleteArchive } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const deleteF = () => {
 		deleteNote(note.id);
 		navigate("/");
 	};
-	const deleteArchive = () => {
-		navigate("/");
+	const deleteArchiveF = () => {
+		deleteArchive(note.id);
+		navigate("/archive");
 	};
+
 	return (
 		<>
 			<Button
@@ -37,7 +39,12 @@ const Delete = ({ note, mode }: { note: Note; mode?: string }) => {
 						Cancel
 					</Button>
 					<Button
-						onClick={mode == "archive" ? deleteF : deleteArchive}
+						onClick={() => {
+							if (mode === "archive") {
+								deleteArchiveF();
+							}
+							deleteF();
+						}}
 						color='red'
 					>
 						Delete

@@ -3,7 +3,7 @@ import Desktop from "./Desktop";
 import Mobile from "./Mobile";
 
 const AppLayout = () => {
-	const matches = useMediaQuery("(min-width: 56.25em)");
+	const matches = useMediaQuery("(min-width: 49rem)");
 	if (matches) {
 		return <Desktop />;
 	}

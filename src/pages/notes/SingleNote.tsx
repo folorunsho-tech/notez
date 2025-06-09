@@ -15,7 +15,7 @@ const SingleNote = () => {
 	} else if (mode === "edit") {
 		return <Edit noteId={id} setSearchParams={setSearchParams} />; // Pass setSearchParams to Edit component
 	} else if (mode === "archive") {
-		return <ArchiveV noteId={id} />;
+		return <ArchiveV noteId={id} mode={mode} />;
 	} else if (mode === "create") {
 		return <Create noteId={id} setSearchParams={setSearchParams} />;
 	}

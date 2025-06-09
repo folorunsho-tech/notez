@@ -24,6 +24,7 @@ createRoot(document.getElementById("root")!).render(
 							<Route path='/' element={<App />}>
 								<Route path='/notes/:noteId' element={<SingleNote />} />
 							</Route>
+							<Route path='/m/notes/:noteId' element={<SingleNote />} />
 							<Route path='/tags' element={<Tags />} />
 							<Route path='/tags/:tag' element={<SingleTag />} />
 							<Route path='/archive' element={<Archived />}>

@@ -11,7 +11,7 @@ import Search from "../components/Search";
 import { useContext } from "react";
 import { AppContext } from "../contexts/NoteContext";
 const Desktop = () => {
-	const { tags } = useContext(AppContext);
+	const { tagsWN, heading } = useContext(AppContext);
 
 	return (
 		<main className='flex  h-screen'>
@@ -52,10 +52,10 @@ const Desktop = () => {
 						type='scroll'
 						className='mt-2 flex flex-col gap-1'
 					>
-						{tags.map((tag) => (
+						{tagsWN.map((tag, index) => (
 							<NavLink
-								key={tag.id}
-								to={`/tags/${tag.id}`}
+								key={index}
+								to={`/tags/${tag}`}
 								className={({ isActive }) =>
 									isActive
 										? "text-blue-500 w-full bg-gray-100 p-2 rounded-md flex gap-2 items-center"
@@ -63,7 +63,7 @@ const Desktop = () => {
 								}
 							>
 								<IconTag size={20} />
-								<Text size='sm'>{tag.label}</Text>
+								<Text size='sm'>{tag}</Text>
 							</NavLink>
 						))}
 					</ScrollAreaAutosize>
@@ -72,7 +72,7 @@ const Desktop = () => {
 			<section className='w-full '>
 				<header className='p-4 w-full border-b border-gray-200 flex justify-between items-center'>
 					<Text size='xl' fw={700}>
-						All Notes
+						{heading}
 					</Text>
 					<div className='flex gap-3 items-center'>
 						<Search />
