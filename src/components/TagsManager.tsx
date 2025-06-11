@@ -26,12 +26,12 @@ const TagsManager = () => {
 								cursor='pointer'
 								size={14}
 								onClick={() => {
-									deleteTag(tag);
+									deleteTag(tag.id);
 								}}
 							/>
 						}
 					>
-						{tag}
+						{tag.label}
 					</Badge>
 				))}
 			</div>

@@ -1,23 +1,28 @@
 import { IconSearch } from "@tabler/icons-react";
-import { useContext, useState } from "react";
-import { Link } from "react-router";
+import { useContext, useEffect, useState } from "react";
+import { Link, useLocation } from "react-router";
 import { AppContext, type Note } from "../../contexts/NoteContext";
-import { Card, TextInput } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 
 const Search = () => {
-	const { notes } = useContext(AppContext);
+	const { notes, getTags, getTag, setHeader } = useContext(AppContext);
 
 	const [search, setSearch] = useState("");
 	const filtered = notes.filter((note: Note) => {
 		const searchLower = search.toLowerCase();
 		return (
 			note?.title?.toLowerCase().includes(searchLower) ||
-			note?.tags.some((tag) => tag.toLowerCase().includes(searchLower)) ||
+			getTags(note?.tags)?.some((tag) =>
+				tag.label.toLowerCase().includes(searchLower)
+			) ||
 			(note?.date &&
 				new Date(note?.date).toLocaleDateString().includes(searchLower))
 		);
 	});
-
+	const location = useLocation();
+	useEffect(() => {
+		if (location.pathname == "/search") setHeader("Search");
+	}, [location]);
 	const Soptions = filtered.map((item) => (
 		<Link
 			key={item.id}
@@ -26,7 +31,15 @@ const Search = () => {
 		>
 			<span className='text-sm font-semibold'>{item.title}</span>
 			<span className='text-xs text-gray-500'>
-				{item.date ? new Date(item.date).toLocaleDateString() : "No date"}
+				{item.date
+					? new Date(item.date).toLocaleDateString("en-US", {
+							year: "numeric",
+							month: "long",
+							day: "numeric",
+							hour: "2-digit",
+							minute: "2-digit",
+					  })
+					: "No date"}
 			</span>
 			<div className='flex gap-1 flex-wrap'>
 				{item.tags.map((tag) => (
@@ -34,7 +47,7 @@ const Search = () => {
 						key={tag}
 						className='bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'
 					>
-						{tag}
+						{getTag(tag)?.label}
 					</span>
 				))}
 			</div>

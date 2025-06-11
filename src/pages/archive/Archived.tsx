@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useLocation } from "react-router";
 import { useContext, useEffect } from "react";
 import { AppContext } from "../../contexts/NoteContext";
 function Archive() {
-	const { archive, setHeader } = useContext(AppContext);
+	const { archive, setHeader, getTag } = useContext(AppContext);
+	const location = useLocation();
 	useEffect(() => {
-		setHeader("Archived Notes");
-	}, []);
+		if (location.pathname === "/archive") setHeader("Archived Notes");
+	}, [location]);
 	return (
 		<main className='flex h-full'>
 			<section className='p-2 w-54 bg-gray-50 border-r border-gray-200'>
@@ -43,7 +44,7 @@ function Archive() {
 										key={index}
 										className='bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded-full'
 									>
-										{tag}
+										{getTag(tag)?.label}
 									</span>
 								))}
 							</div>

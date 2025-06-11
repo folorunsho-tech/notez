@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../contexts/NoteContext";
 import { Text } from "@mantine/core";
 import { NavLink, Outlet, useSearchParams } from "react-router";
+
 import {
 	IconArchive,
 	IconHome,
@@ -23,6 +24,7 @@ const Mobile = () => {
 			setPos("absolute");
 		}
 	}, [mode]);
+
 	return (
 		<>
 			<header className='flex items-center justify-between p-4 bg-gray-200 relative'>
@@ -58,7 +60,7 @@ const Mobile = () => {
 					<IconSearch size={20} />
 				</NavLink>
 				<NavLink
-					to='/archive'
+					to='/m/archive'
 					className={({ isActive }) =>
 						isActive
 							? "text-blue-500 p-2 flex flex-col gap-1  items-center"

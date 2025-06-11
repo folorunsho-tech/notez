@@ -7,6 +7,7 @@ import Archive from "../modals/Archive";
 import Delete from "../modals/Delete";
 import { useState, useContext, useEffect } from "react";
 import { AppContext, type Note } from "../../contexts/NoteContext";
+import TopMenu from "../TopMenu";
 
 const View = ({
 	noteId,
@@ -15,7 +16,7 @@ const View = ({
 	noteId: string | null;
 	setSearchParams: (params: URLSearchParams) => void;
 }) => {
-	const { getNote } = useContext(AppContext);
+	const { getNote, getTag } = useContext(AppContext);
 	const [title, setTitle] = useState<string | undefined>("");
 	const [ntags, setNTags] = useState<string[]>([]);
 	const [content, setContent] = useState<string | undefined>("");
@@ -38,6 +39,7 @@ const View = ({
 	return (
 		<section className='flex w-full'>
 			<section className='flex flex-col gap-4 md:w-4/5 border-r p-3 border-gray-200 w-full'>
+				<TopMenu note={mNote} mode='edit' />
 				<header className='flex flex-col justify-center gap-3 border-b w-full border-gray-200 pb-4'>
 					<div className='flex justify-between items-end'>
 						<Text fw={700} fz={20}>
@@ -65,7 +67,7 @@ const View = ({
 									key={tag}
 									className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 								>
-									{tag}
+									{getTag(tag)?.label}
 								</span>
 							))}
 						</div>

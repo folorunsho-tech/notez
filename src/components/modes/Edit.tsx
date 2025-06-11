@@ -37,6 +37,7 @@ import TagsManager from "../TagsManager";
 import Archive from "../modals/Archive";
 import Delete from "../modals/Delete";
 import { AppContext } from "../../contexts/NoteContext";
+import TopMenu from "../TopMenu";
 
 const lowlight = createLowlight(common);
 
@@ -47,7 +48,7 @@ const Edit = ({
 	noteId: string | null;
 	setSearchParams: (params: URLSearchParams) => void;
 }) => {
-	const { tags, editNote, getNote } = useContext(AppContext);
+	const { tags, editNote, getNote, getTag } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const navigate = useNavigate();
 	const [title, setTitle] = useState<string | undefined>("");
@@ -92,6 +93,17 @@ const Edit = ({
 	return (
 		<section className='flex w-full'>
 			<section className='flex flex-col p-3 pb-1 border-gray-200 md:w-4/5 w-full border-r '>
+				<TopMenu
+					note={{
+						title,
+						tags: ntags,
+						content: editor?.getHTML(),
+						id: noteId,
+						archived: false,
+						date: new Date(),
+					}}
+					mode='edit'
+				/>
 				<header className='flex flex-col justify-center gap-3 pb-4'>
 					<div className='flex justify-between items-end text-xl font-bold'>
 						<input
@@ -115,7 +127,7 @@ const Edit = ({
 										key={tag}
 										className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 									>
-										{tag}
+										{getTag(tag)?.label}
 									</span>
 								))}
 							</div>
@@ -277,7 +289,7 @@ const Edit = ({
 							<MultiSelect
 								label='Add a tag'
 								placeholder='Pick tag'
-								data={tags}
+								data={tags.map((tag) => ({ label: tag.label, value: tag.id }))}
 								value={value}
 								onChange={setValue}
 								searchable

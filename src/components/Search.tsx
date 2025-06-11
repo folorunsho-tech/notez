@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { Link } from "react-router";
 import { AppContext, type Note } from "../contexts/NoteContext";
 const Search = () => {
-	const { notes } = useContext(AppContext);
+	const { notes, getTags } = useContext(AppContext);
 
 	const [search, setSearch] = useState("");
 
@@ -15,7 +15,9 @@ const Search = () => {
 		const searchLower = search.toLowerCase();
 		return (
 			note?.title?.toLowerCase().includes(searchLower) ||
-			note?.tags.some((tag) => tag.toLowerCase().includes(searchLower)) ||
+			getTags(note?.tags)?.some((tag) =>
+				tag.label.toLowerCase().includes(searchLower)
+			) ||
 			(note?.date &&
 				new Date(note?.date).toLocaleDateString().includes(searchLower))
 		);

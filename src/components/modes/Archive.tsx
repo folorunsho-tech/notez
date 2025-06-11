@@ -5,7 +5,9 @@ import { Button, Text } from "@mantine/core";
 import { IconArchive, IconHistory, IconTag } from "@tabler/icons-react";
 import Delete from "../modals/Delete";
 import { useState, useContext, useEffect } from "react";
-import { AppContext, type Note } from "../../contexts/NoteContext";
+import { AppContext, type Note, type Tag } from "../../contexts/NoteContext";
+import TopMenu from "../TopMenu";
+import UnArchive from "../modals/UnArchive";
 
 const ArchiveV = ({
 	noteId,
@@ -15,24 +17,31 @@ const ArchiveV = ({
 	mode: string;
 	setSearchParams?: (params: URLSearchParams) => void;
 }) => {
-	const { getNoteArchive } = useContext(AppContext);
+	const { getNoteArchive, getTags } = useContext(AppContext);
 	const [title, setTitle] = useState<string | undefined>("");
-	const [ntags, setNTags] = useState<string[]>([]);
+	const [ntags, setNTags] = useState<Tag[] | null>([]);
 	const [content, setContent] = useState<string | undefined>("");
 	const [date, setDate] = useState<string | number | Date>("");
 	const [mNote, setMNote] = useState<any>();
 	useEffect(() => {
 		const note: Note | undefined = getNoteArchive(noteId) ?? undefined;
+		const newContent = `
+		<main style="font-family:sans-serif;">
+		${note?.content}
+		</main>
+		`;
 		setMNote(note);
 		setTitle(note?.title);
-		setContent(note?.content);
-		setNTags(note?.tags ?? []);
+		setContent(newContent);
+		const tgs = note?.tags ? getTags(note?.tags) : [];
+		setNTags(tgs);
 		setDate(note?.date ? new Date(note.date) : "");
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [noteId]);
 	return (
 		<section className='flex w-full'>
-			<section className='flex flex-col gap-4 w-4/5 border-r p-3 border-gray-200'>
+			<section className='flex flex-col gap-4 md:w-4/5 border-r p-3 border-gray-200 w-full'>
+				<TopMenu note={mNote} mode='archive' />
 				<header className='flex flex-col justify-center gap-3 border-b border-gray-200 pb-4'>
 					<div className='flex justify-between items-end'>
 						<Text fw={700} fz={20}>
@@ -54,12 +63,12 @@ const ArchiveV = ({
 							</Text>
 						</div>
 						<div className='flex items-center gap-1'>
-							{ntags.map((tag, index) => (
+							{ntags?.map((tag, index) => (
 								<span
 									key={index}
 									className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 								>
-									{tag}
+									{tag.label}
 								</span>
 							))}
 						</div>
@@ -84,8 +93,8 @@ const ArchiveV = ({
 				</header>
 				<iframe srcDoc={content}></iframe>
 			</section>
-			<div className='space-y-4 p-3 w-full max-w-[12rem]'>
-				{/* <Archive note={mNote} /> */}
+			<div className='space-y-4 p-3 w-full max-w-[12rem] hidden md:block'>
+				<UnArchive note={mNote} />
 				<Delete note={mNote} mode={mode} />
 			</div>
 		</section>

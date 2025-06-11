@@ -45,7 +45,7 @@ const Create = ({
 	noteId: string | null;
 	setSearchParams: (params: URLSearchParams) => void;
 }) => {
-	const { tags, addNote } = useContext(AppContext);
+	const { tags, addNote, getTag } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const navigate = useNavigate();
 	const [title, setTitle] = useState<string | undefined>("");
@@ -90,12 +90,12 @@ const Create = ({
 							</Text>
 						</div>
 						<div className='flex items-center gap-1'>
-							{ntags.map((tag, index) => (
+							{ntags?.map((tag, index) => (
 								<span
 									key={index}
 									className='bg-gray-100 p-1 text-xs text-gray-500 rounded'
 								>
-									{tag}
+									{getTag(tag)?.label}
 								</span>
 							))}
 						</div>
@@ -254,7 +254,7 @@ const Create = ({
 						<MultiSelect
 							label='Add a tag'
 							placeholder='Pick tag'
-							data={tags}
+							data={tags.map((tag) => ({ value: tag.id, label: tag.label }))}
 							value={value}
 							onChange={setValue}
 							searchable

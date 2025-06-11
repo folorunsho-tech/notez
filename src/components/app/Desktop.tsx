@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { AppContext } from "../../contexts/NoteContext";
 const Desktop = () => {
 	const id = nanoid();
-	const { notes } = useContext(AppContext);
+	const { notes, getTag } = useContext(AppContext);
 	return (
 		<main className='hidden md:flex h-full'>
 			<section className='p-4 md:w-54 bg-gray-50 border-r border-gray-200'>
@@ -51,7 +51,7 @@ const Desktop = () => {
 										key={index}
 										className='bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded-full'
 									>
-										{tag}
+										{getTag(tag)?.label}
 									</span>
 								))}
 							</div>

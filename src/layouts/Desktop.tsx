@@ -55,7 +55,7 @@ const Desktop = () => {
 						{tagsWN.map((tag, index) => (
 							<NavLink
 								key={index}
-								to={`/tags/${tag}`}
+								to={`/tags/${tag.id}`}
 								className={({ isActive }) =>
 									isActive
 										? "text-blue-500 w-full bg-gray-100 p-2 rounded-md flex gap-2 items-center"
@@ -63,7 +63,7 @@ const Desktop = () => {
 								}
 							>
 								<IconTag size={20} />
-								<Text size='sm'>{tag}</Text>
+								<Text size='sm'>{tag.label}</Text>
 							</NavLink>
 						))}
 					</ScrollAreaAutosize>

@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { createContext, useEffect, useState, type ReactNode } from "react";
 
 type Note = {
@@ -8,14 +9,16 @@ type Note = {
 	tags: string[];
 	date: string | number | Date | undefined;
 };
+type Tag = { id: string; label: string };
 type AppContextType = {
 	notes: Note[];
 	archive: Note[];
-	tags: string[];
-	tagsWN: string[];
+	tags: Tag[];
+	tagsWN: Tag[];
 	heading: string;
 	addNote: (note: Note) => void;
 	archiveNote: (note: Note) => void;
+	unArchiveNote: (note: Note) => void;
 	editNote: (note: Note) => void;
 	deleteNote: (id: string | null) => void;
 	deleteArchive: (id: string | null) => void;
@@ -23,8 +26,11 @@ type AppContextType = {
 	getNoteTag: (tag: string) => Note[] | null | undefined;
 	getNoteArchive: (id: string | null) => Note | null | undefined;
 	addTag: (tag: string) => void;
+	editTag: (id: string, newLabel: string) => void;
 	deleteTag: (tag: string) => void;
 	setHeader: (text: string) => void;
+	getTags: (gtags: string[]) => Tag[] | null;
+	getTag: (id: string) => Tag | null | undefined;
 };
 
 const AppContext = createContext<AppContextType>({
@@ -38,19 +44,23 @@ const AppContext = createContext<AppContextType>({
 	getNoteTag: () => null,
 	getNoteArchive: () => null,
 	addNote: () => {},
+	editTag: () => {},
 	archiveNote: () => {},
+	unArchiveNote: () => {},
 	editNote: () => {},
 	deleteNote: () => {},
 	deleteArchive: () => {},
 	addTag: () => {},
 	deleteTag: () => {},
+	getTags: () => null,
+	getTag: () => null,
 });
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
 	const [notes, setNotes] = useState<Note[]>([]);
 	const [archive, setArchive] = useState<Note[]>([]);
-	const [tags, setTags] = useState<string[] | []>([]);
-	const [tagsWN, settagsWN] = useState<string[] | []>([]);
+	const [tags, setTags] = useState<{ id: string; label: string }[]>([]);
+	const [tagsWN, setTagsWN] = useState<{ id: string; label: string }[]>([]);
 	const [heading, setHeading] = useState<string>("All Notes");
 	const addNote = (note: Note) => {
 		setNotes((prev) => [note, ...prev]);
@@ -67,8 +77,21 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 		const others = notes.filter((n) => n.id !== note.id);
 		setNotes([...others]);
 	};
+	const unArchiveNote = (note: Note) => {
+		setNotes((prev) => [{ ...note, archived: false }, ...prev]);
+		const others = archive.filter((n) => n.id !== note.id);
+		setArchive([...others]);
+	};
 	const addTag = (tag: string) => {
-		setTags((prev) => [tag, ...prev]);
+		const t = {
+			id: nanoid(7),
+			label: tag,
+		};
+		setTags((prev) => [t, ...prev]);
+	};
+	const editTag = (id: string, newLabel: string) => {
+		const prev = tags.filter((tag) => tag.id !== id);
+		if (id) setTags([{ id, label: newLabel }, ...prev]);
 	};
 	const getNote = (id: string | null) => {
 		const found = notes.find((note) => note.id == id);
@@ -89,20 +112,27 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 		setNotes(deleted);
 	};
 	const deleteTag = (tag: string) => {
-		const deleted = tags.filter((t) => t !== tag);
+		const deleted = tags.filter((t) => t.id !== tag);
 		setTags(deleted);
+	};
+	const getTags = (gtags: string[]) => {
+		const found: Tag[] = [];
+		gtags.forEach((t) => {
+			const f = tags.find((tg) => tg.id == t);
+			if (f) found.push(f);
+		});
+		return found;
+	};
+	const getTag = (id: string) => {
+		return tags.find((tag) => tag.id == id);
 	};
 
 	useEffect(() => {
-		const tagswn: { [tag: string]: Note[] } = notes.reduce((acc, note) => {
-			note.tags.forEach((tag) => {
-				if (!acc[tag]) acc[tag] = [];
-				acc[tag].push(note);
-			});
-			return acc;
-		}, {} as { [tag: string]: Note[] });
-		settagsWN(Object.keys(tagswn));
-	}, [notes]);
+		const found = tags.filter((tag) =>
+			notes.some((note) => note.tags.includes(tag.id))
+		);
+		setTagsWN(found);
+	}, [notes, tags]);
 
 	return (
 		<AppContext.Provider
@@ -123,6 +153,10 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 				tagsWN,
 				heading,
 				setHeader,
+				unArchiveNote,
+				getTags,
+				getTag,
+				editTag,
 			}}
 		>
 			{children}
@@ -132,4 +166,4 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
 export default AppProvider;
 export { AppContext };
-export { type Note };
+export { type Note, type Tag };

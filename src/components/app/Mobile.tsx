@@ -8,7 +8,7 @@ import { AppContext } from "../../contexts/NoteContext";
 
 const Mobile = () => {
 	const id = nanoid();
-	const { notes } = useContext(AppContext);
+	const { notes, getTag } = useContext(AppContext);
 	return (
 		<main className='flex flex-col w-full mt-3 gap-4'>
 			<Button
@@ -52,7 +52,7 @@ const Mobile = () => {
 									key={index}
 									className='bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded-full'
 								>
-									{tag}
+									{getTag(tag)?.label}
 								</span>
 							))}
 						</div>

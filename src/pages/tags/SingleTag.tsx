@@ -5,20 +5,21 @@ import { Card } from "@mantine/core";
 
 const SingleTag = () => {
 	const [tagNotes, setTagNotes] = useState<Note[]>([]);
-	const { getNoteTag, setHeader } = useContext(AppContext);
+	const { getNoteTag, setHeader, getTag } = useContext(AppContext);
 	const params = useParams();
 	useEffect(() => {
 		if (params.tag) {
 			const notes = getNoteTag(params.tag);
+
 			setTagNotes(notes ?? []);
 		} else {
 			setTagNotes([]);
 		}
-		setHeader(`Tag -- ${params.tag}`);
+		if (params.tag) setHeader(`Tag -- ${getTag(params.tag)?.label}`);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.tag]);
 	return (
-		<main className='p-3'>
+		<main>
 			{tagNotes.map((item) => (
 				<Card
 					component={Link}
@@ -40,7 +41,7 @@ const SingleTag = () => {
 								key={index}
 								className='bg-blue-300 text-blue-600 text-xs px-2 py-1 rounded-sm'
 							>
-								{tag}
+								{getTag(tag)?.label}
 							</span>
 						))}
 					</div>

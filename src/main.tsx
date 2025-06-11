@@ -14,6 +14,7 @@ import Archived from "./pages/archive/Archived.tsx";
 import SingleTag from "./pages/tags/SingleTag.tsx";
 import SingleNote from "./pages/notes/SingleNote.tsx";
 import AppProvider from "./contexts/NoteContext.tsx";
+import Page from "./pages/archive/Page.tsx";
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<AppProvider>
@@ -25,11 +26,13 @@ createRoot(document.getElementById("root")!).render(
 								<Route path='/notes/:noteId' element={<SingleNote />} />
 							</Route>
 							<Route path='/m/notes/:noteId' element={<SingleNote />} />
-							<Route path='/tags' element={<Tags />} />
-							<Route path='/tags/:tag' element={<SingleTag />} />
+							<Route path='/tags' element={<Tags />}>
+								<Route path=':tag' element={<SingleTag />} />
+							</Route>
 							<Route path='/archive' element={<Archived />}>
 								<Route path='/archive/:noteId' element={<SingleNote />} />
 							</Route>
+							<Route path='/m/archive' element={<Page />} />
 							<Route path='/search' element={<Search />} />
 							<Route path='/settings' element={<Settings />} />
 						</Route>

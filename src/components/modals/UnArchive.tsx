@@ -1,16 +1,16 @@
 import { ActionIcon, Button, Group, Modal, Text } from "@mantine/core";
-import { IconArchive } from "@tabler/icons-react";
+import { IconArchiveOff } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { useContext } from "react";
 import { AppContext, type Note } from "../../contexts/NoteContext";
 import { useNavigate } from "react-router";
 
-const Archive = ({ note, view }: { note: Note; view?: string }) => {
+const UnArchive = ({ note, view }: { note: Note; view?: string }) => {
 	const navigate = useNavigate();
-	const { archiveNote } = useContext(AppContext);
+	const { unArchiveNote } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
-	const archive = () => {
-		archiveNote(note);
+	const unArchive = () => {
+		unArchiveNote(note);
 		navigate("/");
 	};
 	return (
@@ -20,25 +20,26 @@ const Archive = ({ note, view }: { note: Note; view?: string }) => {
 					variant='outline'
 					fullWidth
 					color='yellow'
-					leftSection={<IconArchive size={18} />}
+					leftSection={<IconArchiveOff size={18} />}
 					onClick={open}
 				>
-					Archive
+					Unarchive
 				</Button>
 			) : (
 				<ActionIcon variant='outline' color='yellow' onClick={open}>
-					<IconArchive size={18} />
+					<IconArchiveOff size={18} />
 				</ActionIcon>
 			)}
-			<Modal opened={opened} onClose={close} title='Archive Note'>
+			<Modal opened={opened} onClose={close} title='Remove note from archive'>
 				<Text>
-					Are you sure you want to Archive <b>{note?.title} </b> note?
+					Are you sure you want to remove <b>{note?.title} </b> note from
+					archive?
 				</Text>
 				<Group mt={14}>
 					<Button onClick={close} color='black'>
 						Cancel
 					</Button>
-					<Button onClick={archive} color='yellow'>
+					<Button onClick={unArchive} color='yellow'>
 						Archive
 					</Button>
 				</Group>
@@ -47,4 +48,4 @@ const Archive = ({ note, view }: { note: Note; view?: string }) => {
 	);
 };
 
-export default Archive;
+export default UnArchive;
