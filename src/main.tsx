@@ -12,9 +12,12 @@ import Search from "./pages/search/Search.tsx";
 import Settings from "./pages/settings/Settings.tsx";
 import Archived from "./pages/archive/Archived.tsx";
 import SingleTag from "./pages/tags/SingleTag.tsx";
-import SingleNote from "./pages/notes/SingleNote.tsx";
 import AppProvider from "./contexts/NoteContext.tsx";
 import Page from "./pages/archive/Page.tsx";
+import View from "./pages/notes/View.tsx";
+import Edit from "./pages/notes/Edit.tsx";
+import Create from "./pages/notes/Create.tsx";
+import ArchiveV from "./pages/notes/Archive.tsx";
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<AppProvider>
@@ -22,15 +25,15 @@ createRoot(document.getElementById("root")!).render(
 				<BrowserRouter>
 					<Routes>
 						<Route element={<AppLayout />}>
-							<Route path='/' element={<App />}>
-								<Route path='/notes/:noteId' element={<SingleNote />} />
-							</Route>
-							<Route path='/m/notes/:noteId' element={<SingleNote />} />
+							<Route path='/' element={<App />} />
+							<Route path='/notes/:noteId/create' element={<Create />} />
+							<Route path='/notes/:noteId/edit' element={<Edit />} />
+							<Route path='/notes/:noteId' element={<View />} />
 							<Route path='/tags' element={<Tags />}>
 								<Route path=':tag' element={<SingleTag />} />
 							</Route>
 							<Route path='/archive' element={<Archived />}>
-								<Route path='/archive/:noteId' element={<SingleNote />} />
+								<Route path=':noteId' element={<ArchiveV />} />
 							</Route>
 							<Route path='/m/archive' element={<Page />} />
 							<Route path='/search' element={<Search />} />

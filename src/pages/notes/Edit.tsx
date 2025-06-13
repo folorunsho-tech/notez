@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
 	ActionIcon,
@@ -32,30 +31,26 @@ import { Color } from "@tiptap/extension-color";
 import TextStyle from "@tiptap/extension-text-style";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
-import { useNavigate } from "react-router";
-import TagsManager from "../TagsManager";
-import Archive from "../modals/Archive";
-import Delete from "../modals/Delete";
-import { AppContext } from "../../contexts/NoteContext";
-import TopMenu from "../TopMenu";
+import { useNavigate, useParams } from "react-router";
+import TagsManager from "../../components/TagsManager";
+import Archive from "../../components/modals/Archive";
+import Delete from "../../components/modals/Delete";
+import { AppContext, type Note } from "../../contexts/NoteContext";
+import TopMenu from "../../components/TopMenu";
 
 const lowlight = createLowlight(common);
 
-const Edit = ({
-	noteId,
-	setSearchParams,
-}: {
-	noteId: string | null;
-	setSearchParams: (params: URLSearchParams) => void;
-}) => {
-	const { tags, editNote, getNote, getTag } = useContext(AppContext);
-	const [opened, { open, close }] = useDisclosure(false);
+const Edit = () => {
+	const params = useParams();
+	const noteId = params.noteId || null;
 	const navigate = useNavigate();
+	const { tags, editNote, getNote, getTag, loading } = useContext(AppContext);
+	const [opened, { open, close }] = useDisclosure(false);
 	const [title, setTitle] = useState<string | undefined>("");
 	const [ntags, setNTags] = useState<string[]>([]);
 	const [econtent, setContent] = useState<string | undefined>("");
-	const [mNote, setMNote] = useState<any>(null);
-	const [value, setValue] = useState<string[]>(ntags);
+	const [mNote, setMNote] = useState<Note | null>(null);
+	const [value, setValue] = useState<string[]>([]);
 
 	const editor = useEditor({
 		extensions: [
@@ -77,30 +72,34 @@ const Edit = ({
 		content: econtent,
 	});
 	useEffect(() => {
-		const note = getNote(noteId);
-		setMNote(note);
-		setTitle(note?.title);
-		setContent(note?.content);
-		setNTags(note?.tags ?? []);
+		if (!loading) {
+			const note = getNote(noteId);
+			setMNote(note);
+			setTitle(note?.title);
+			setContent(note?.content);
+			setNTags(note?.tags ?? []);
+			setValue(note?.tags ?? []);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [noteId]);
+	}, [loading]);
 	// Update editor content when econtent changes and editor is ready
 	useEffect(() => {
 		if (editor && econtent !== undefined) {
 			editor.commands.setContent(econtent);
 		}
 	}, [editor, econtent]);
+	const tagsList = tags.map((tag) => ({ label: tag.label, value: tag.id }));
 	return (
 		<section className='flex w-full'>
 			<section className='flex flex-col p-3 pb-1 border-gray-200 md:w-4/5 w-full border-r '>
 				<TopMenu
 					note={{
-						title,
+						title: title ?? "",
 						tags: ntags,
-						content: editor?.getHTML(),
-						id: noteId,
+						content: editor?.getHTML() ?? "",
+						id: noteId ?? "",
 						archived: false,
-						date: new Date(),
+						updatedAt: new Date(),
 					}}
 					mode='edit'
 				/>
@@ -252,14 +251,14 @@ const Edit = ({
 						onClick={() => {
 							const ncontent = editor?.getHTML();
 							editNote({
-								title,
+								title: title ?? "",
 								tags: ntags,
-								content: ncontent,
-								id: noteId,
+								content: ncontent ?? "",
+								id: noteId ?? "",
 								archived: false,
-								date: new Date(),
+								updatedAt: new Date(),
 							});
-							setSearchParams(new URLSearchParams("?mode=view"));
+							navigate(`/notes/${noteId}`);
 						}}
 						disabled={!title}
 					>
@@ -289,7 +288,7 @@ const Edit = ({
 							<MultiSelect
 								label='Add a tag'
 								placeholder='Pick tag'
-								data={tags.map((tag) => ({ label: tag.label, value: tag.id }))}
+								data={tagsList}
 								value={value}
 								onChange={setValue}
 								searchable

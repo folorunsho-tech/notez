@@ -40,7 +40,7 @@ const UnArchive = ({ note, view }: { note: Note; view?: string }) => {
 						Cancel
 					</Button>
 					<Button onClick={unArchive} color='yellow'>
-						Archive
+						Unarchive
 					</Button>
 				</Group>
 			</Modal>

@@ -31,24 +31,20 @@ import { Color } from "@tiptap/extension-color";
 import TextStyle from "@tiptap/extension-text-style";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
-import { useNavigate } from "react-router";
-import TagsManager from "../TagsManager";
+import { useNavigate, useParams } from "react-router";
+import TagsManager from "../../components/TagsManager";
 
 import { AppContext } from "../../contexts/NoteContext";
 
 const lowlight = createLowlight(common);
 
-const Create = ({
-	noteId,
-	setSearchParams,
-}: {
-	noteId: string | null;
-	setSearchParams: (params: URLSearchParams) => void;
-}) => {
+const Create = () => {
+	const params = useParams();
+	const noteId = params.noteId || null;
 	const { tags, addNote, getTag } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const navigate = useNavigate();
-	const [title, setTitle] = useState<string | undefined>("");
+	const [title, setTitle] = useState<string>("");
 	const [ntags, setNTags] = useState<string[]>([]);
 	const [value, setValue] = useState<string[]>(ntags);
 	const editor = useEditor({
@@ -219,12 +215,13 @@ const Create = ({
 						addNote({
 							title,
 							tags: ntags,
-							content: ncontent,
-							id: noteId,
+							content: ncontent ? ncontent : "",
+							id: noteId ?? "",
 							archived: false,
-							date: new Date(),
+							createdAt: new Date(),
+							updatedAt: new Date(),
 						});
-						setSearchParams(new URLSearchParams("?mode=view"));
+						navigate(`/notes/${noteId}`);
 					}}
 					disabled={!title}
 				>

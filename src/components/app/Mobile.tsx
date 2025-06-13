@@ -13,7 +13,7 @@ const Mobile = () => {
 		<main className='flex flex-col w-full mt-3 gap-4'>
 			<Button
 				component={Link}
-				to={`/m/notes/${id}?mode=create`}
+				to={`/notes/${id}/create`}
 				maw={400}
 				className='self-center'
 				leftSection={<IconPlus size={12} />}
@@ -25,7 +25,7 @@ const Mobile = () => {
 					<NavLink
 						key={item.id}
 						end
-						to={`/m/notes/${item.id}?mode=view`}
+						to={`/notes/${item.id}`}
 						className={({ isActive }) =>
 							isActive
 								? "flex flex-col gap-1 p-2 bg-blue-100 text-blue-800 transition-colors duration-200"
@@ -36,8 +36,8 @@ const Mobile = () => {
 							{item.title}
 						</span>
 						<span className='text-xs text-gray-500'>
-							{item.date
-								? new Date(item.date).toLocaleDateString("en-US", {
+							{item.updatedAt
+								? new Date(item.updatedAt).toLocaleDateString("en-US", {
 										year: "numeric",
 										month: "long",
 										day: "numeric",

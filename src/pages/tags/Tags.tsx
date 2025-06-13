@@ -13,8 +13,8 @@ const Tags = () => {
 	}, [location]);
 	return (
 		<main className='p-3 space-y-3'>
-			<nav className='md:hidden'>
-				<ScrollAreaAutosize type='scroll' className='flex gap-1'>
+			<ScrollAreaAutosize>
+				<nav className='md:hidden flex gap-1'>
 					{tagsWN.map((tag, index) => (
 						<NavLink
 							key={index}
@@ -29,8 +29,8 @@ const Tags = () => {
 							<Text size='sm'>{tag.label}</Text>
 						</NavLink>
 					))}
-				</ScrollAreaAutosize>
-			</nav>
+				</nav>
+			</ScrollAreaAutosize>
 			<Outlet />
 		</main>
 	);

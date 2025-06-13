@@ -1,13 +1,24 @@
 import { nanoid } from "nanoid";
 import { createContext, useEffect, useState, type ReactNode } from "react";
+import {
+	addDBNote,
+	addDBTag,
+	deleteDBNote,
+	deleteDBTag,
+	getAllDBNotes,
+	getAllDBTags,
+	updateDBNote,
+	updateDBTag,
+} from "../lib/db";
 
 type Note = {
-	id: string | null;
-	title: string | undefined;
+	id: string;
+	title: string;
 	archived: boolean | false;
-	content: string | undefined;
+	content: string;
 	tags: string[];
-	date: string | number | Date | undefined;
+	updatedAt: string | number | Date;
+	createdAt?: string | number | Date;
 };
 type Tag = { id: string; label: string };
 type AppContextType = {
@@ -22,15 +33,16 @@ type AppContextType = {
 	editNote: (note: Note) => void;
 	deleteNote: (id: string | null) => void;
 	deleteArchive: (id: string | null) => void;
-	getNote: (id: string | null) => Note | null | undefined;
+	getNote: (id: string | null) => Note | null;
 	getNoteTag: (tag: string) => Note[] | null | undefined;
-	getNoteArchive: (id: string | null) => Note | null | undefined;
+	getNoteArchive: (id: string) => Note | null | undefined;
 	addTag: (tag: string) => void;
 	editTag: (id: string, newLabel: string) => void;
 	deleteTag: (tag: string) => void;
 	setHeader: (text: string) => void;
 	getTags: (gtags: string[]) => Tag[] | null;
 	getTag: (id: string) => Tag | null | undefined;
+	loading: boolean;
 };
 
 const AppContext = createContext<AppContextType>({
@@ -39,6 +51,7 @@ const AppContext = createContext<AppContextType>({
 	tags: [],
 	tagsWN: [],
 	heading: "All Notes",
+	loading: false,
 	setHeader: () => null,
 	getNote: () => null,
 	getNoteTag: () => null,
@@ -57,62 +70,70 @@ const AppContext = createContext<AppContextType>({
 });
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
+	const [allNotes, setAllNotes] = useState<Note[]>([]);
 	const [notes, setNotes] = useState<Note[]>([]);
 	const [archive, setArchive] = useState<Note[]>([]);
 	const [tags, setTags] = useState<{ id: string; label: string }[]>([]);
 	const [tagsWN, setTagsWN] = useState<{ id: string; label: string }[]>([]);
 	const [heading, setHeading] = useState<string>("All Notes");
-	const addNote = (note: Note) => {
-		setNotes((prev) => [note, ...prev]);
+	const [loading, setLoading] = useState<boolean>(false);
+	const addNote = async (note: Note) => {
+		const notes = await addDBNote(note);
+		setAllNotes(notes);
 	};
 	const setHeader = (text: string) => {
 		setHeading(text);
 	};
-	const editNote = (note: Note) => {
-		const others = notes.filter((n) => n.id !== note.id);
-		setNotes([note, ...others]);
+	const editNote = async (note: Note) => {
+		const n = await updateDBNote(note.id, note);
+		setAllNotes(n ?? notes);
 	};
-	const archiveNote = (note: Note) => {
-		setArchive((prev) => [{ ...note, archived: true }, ...prev]);
-		const others = notes.filter((n) => n.id !== note.id);
-		setNotes([...others]);
+	const archiveNote = async (note: Note) => {
+		const update = { ...note, archived: true };
+		const n = await updateDBNote(update.id, update);
+		setAllNotes(n ?? notes);
 	};
-	const unArchiveNote = (note: Note) => {
-		setNotes((prev) => [{ ...note, archived: false }, ...prev]);
-		const others = archive.filter((n) => n.id !== note.id);
-		setArchive([...others]);
+	const unArchiveNote = async (note: Note) => {
+		const update = { ...note, archived: false };
+		const n = await updateDBNote(update.id, update);
+		setAllNotes(n ?? notes);
 	};
-	const addTag = (tag: string) => {
+	const addTag = async (tag: string) => {
 		const t = {
 			id: nanoid(7),
 			label: tag,
 		};
-		setTags((prev) => [t, ...prev]);
+		const tg = await addDBTag(t);
+		setTags(tg);
 	};
-	const editTag = (id: string, newLabel: string) => {
-		const prev = tags.filter((tag) => tag.id !== id);
-		if (id) setTags([{ id, label: newLabel }, ...prev]);
+	const editTag = async (id: string, newLabel: string) => {
+		const t = await updateDBTag(id, { id, label: newLabel });
+		setTags(t ?? tags);
 	};
 	const getNote = (id: string | null) => {
-		const found = notes.find((note) => note.id == id);
+		const found = allNotes.find((note) => note.id == id) ?? null;
 		return found;
 	};
 	const getNoteTag = (tag: string) =>
-		notes.filter((note) => note.tags.includes(tag));
-	const getNoteArchive = (id: string | null) => {
-		const found = archive.find((note) => note.id == id);
+		allNotes.filter((note) => note.tags.includes(tag));
+	const getNoteArchive = (id: string) => {
+		const found = allNotes.find((note) => note.id == id);
 		return found;
 	};
-	const deleteNote = (id: string | null) => {
-		const deleted = notes.filter((note) => note.id !== id);
-		setNotes(deleted);
+	const deleteNote = async (id: string | null) => {
+		if (id) {
+			const deleted = await deleteDBNote(id);
+			setAllNotes(deleted);
+		}
 	};
-	const deleteArchive = (id: string | null) => {
-		const deleted = archive.filter((note) => note.id !== id);
-		setNotes(deleted);
+	const deleteArchive = async (id: string | null) => {
+		if (id) {
+			const deleted = await deleteDBNote(id);
+			setAllNotes(deleted);
+		}
 	};
-	const deleteTag = (tag: string) => {
-		const deleted = tags.filter((t) => t.id !== tag);
+	const deleteTag = async (tag: string) => {
+		const deleted = await deleteDBTag(tag);
 		setTags(deleted);
 	};
 	const getTags = (gtags: string[]) => {
@@ -133,6 +154,28 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 		);
 		setTagsWN(found);
 	}, [notes, tags]);
+	const fetchNotes = async () => {
+		setLoading(true);
+		const allNotes = await getAllDBNotes();
+		setAllNotes(allNotes);
+		setLoading(false);
+	};
+	const fetchTags = async () => {
+		setLoading(true);
+		const tags = await getAllDBTags();
+		setTags(tags);
+		setLoading(false);
+	};
+	useEffect(() => {
+		fetchNotes();
+		fetchTags();
+	}, []);
+	useEffect(() => {
+		const nNotes = allNotes.filter((note) => note.archived == false);
+		const aNotes = allNotes.filter((note) => note.archived == true);
+		setNotes(nNotes);
+		setArchive(aNotes);
+	}, [allNotes]);
 
 	return (
 		<AppContext.Provider
@@ -141,6 +184,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 				addNote,
 				getNote,
 				deleteNote,
+				loading,
 				tags,
 				addTag,
 				deleteTag,

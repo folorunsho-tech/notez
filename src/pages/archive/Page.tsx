@@ -15,7 +15,7 @@ const Page = () => {
 				<NavLink
 					key={item.id}
 					end
-					to={`/m/notes/${item.id}?mode=archive`}
+					to={`/archive/${item.id}`}
 					className={({ isActive }) =>
 						isActive
 							? "flex flex-col gap-1 p-2 bg-blue-100 text-blue-800 transition-colors duration-200"
@@ -26,8 +26,8 @@ const Page = () => {
 						{item.title}
 					</span>
 					<span className='text-xs text-gray-500'>
-						{item.date
-							? new Date(item.date).toLocaleDateString("en-US", {
+						{item.updatedAt
+							? new Date(item.updatedAt).toLocaleDateString("en-US", {
 									year: "numeric",
 									month: "long",
 									day: "numeric",

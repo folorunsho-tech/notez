@@ -15,8 +15,8 @@ const Search = () => {
 			getTags(note?.tags)?.some((tag) =>
 				tag.label.toLowerCase().includes(searchLower)
 			) ||
-			(note?.date &&
-				new Date(note?.date).toLocaleDateString().includes(searchLower))
+			(note?.updatedAt &&
+				new Date(note?.updatedAt).toLocaleDateString().includes(searchLower))
 		);
 	});
 	const location = useLocation();
@@ -31,8 +31,8 @@ const Search = () => {
 		>
 			<span className='text-sm font-semibold'>{item.title}</span>
 			<span className='text-xs text-gray-500'>
-				{item.date
-					? new Date(item.date).toLocaleDateString("en-US", {
+				{item.updatedAt
+					? new Date(item.updatedAt).toLocaleDateString("en-US", {
 							year: "numeric",
 							month: "long",
 							day: "numeric",

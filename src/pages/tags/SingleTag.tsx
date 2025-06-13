@@ -19,11 +19,11 @@ const SingleTag = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [params.tag]);
 	return (
-		<main>
+		<main className='md:flex gap-3'>
 			{tagNotes.map((item) => (
 				<Card
 					component={Link}
-					to={`/notes/${item.id}?mode=view`}
+					to={`/notes/${item.id}`}
 					key={item.id}
 					shadow='sm'
 					radius='md'
@@ -46,8 +46,8 @@ const SingleTag = () => {
 						))}
 					</div>
 					<span className='text-xs text-gray-500'>
-						{item.date
-							? new Date(item.date).toLocaleDateString("en-US", {
+						{item.updatedAt
+							? new Date(item.updatedAt).toLocaleDateString("en-US", {
 									year: "numeric",
 									month: "long",
 									day: "numeric",

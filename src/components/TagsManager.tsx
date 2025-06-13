@@ -6,6 +6,7 @@ import { AppContext } from "../contexts/NoteContext";
 const TagsManager = () => {
 	const { tags, deleteTag, addTag } = useContext(AppContext);
 	const [tag, setTag] = useState<string>("");
+
 	return (
 		<form
 			className='p-2 space-y-6'

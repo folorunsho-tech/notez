@@ -5,13 +5,15 @@ import { useContext } from "react";
 import { AppContext, type Note } from "../../contexts/NoteContext";
 import { useNavigate } from "react-router";
 
-const Archive = ({ note, view }: { note: Note; view?: string }) => {
+const Archive = ({ note, view }: { note: Note | null; view?: string }) => {
 	const navigate = useNavigate();
 	const { archiveNote } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const archive = () => {
-		archiveNote(note);
-		navigate("/");
+		if (note) {
+			archiveNote(note);
+			navigate("/");
+		}
 	};
 	return (
 		<>

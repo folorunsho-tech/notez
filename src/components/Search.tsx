@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { Link } from "react-router";
 import { AppContext, type Note } from "../contexts/NoteContext";
 const Search = () => {
-	const { notes, getTags } = useContext(AppContext);
+	const { notes, getTags, getTag } = useContext(AppContext);
 
 	const [search, setSearch] = useState("");
 
@@ -18,8 +18,8 @@ const Search = () => {
 			getTags(note?.tags)?.some((tag) =>
 				tag.label.toLowerCase().includes(searchLower)
 			) ||
-			(note?.date &&
-				new Date(note?.date).toLocaleDateString().includes(searchLower))
+			(note?.updatedAt &&
+				new Date(note?.updatedAt).toLocaleDateString().includes(searchLower))
 		);
 	});
 
@@ -31,7 +31,9 @@ const Search = () => {
 			>
 				<span className='text-sm font-semibold'>{item.title}</span>
 				<span className='text-xs text-gray-500'>
-					{item.date ? new Date(item.date).toLocaleDateString() : "No date"}
+					{item.updatedAt
+						? new Date(item.updatedAt).toLocaleDateString()
+						: "No date"}
 				</span>
 				<div className='flex gap-1 flex-wrap'>
 					{item.tags.map((tag) => (
@@ -39,7 +41,7 @@ const Search = () => {
 							key={tag}
 							className='bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'
 						>
-							{tag}
+							{getTag(tag)?.label}
 						</span>
 					))}
 				</div>

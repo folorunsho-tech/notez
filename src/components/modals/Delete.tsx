@@ -10,7 +10,7 @@ const Delete = ({
 	mode,
 	view,
 }: {
-	note: Note;
+	note: Note | null;
 	mode?: string;
 	view?: string;
 }) => {
@@ -18,12 +18,16 @@ const Delete = ({
 	const { deleteNote, deleteArchive } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const deleteF = () => {
-		deleteNote(note.id);
-		navigate("/");
+		if (note) {
+			deleteNote(note.id);
+			navigate("/");
+		}
 	};
 	const deleteArchiveF = () => {
-		deleteArchive(note.id);
-		navigate("/archive");
+		if (note) {
+			deleteArchive(note.id);
+			navigate("/archive");
+		}
 	};
 
 	return (
