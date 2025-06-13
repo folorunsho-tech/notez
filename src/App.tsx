@@ -4,7 +4,7 @@ import { Link, NavLink } from "react-router";
 import { nanoid } from "nanoid";
 import { useContext } from "react";
 import { AppContext } from "./contexts/NoteContext";
-const Desktop = () => {
+const App = () => {
 	const id = nanoid();
 	const { notes, getTag } = useContext(AppContext);
 	return (
@@ -66,4 +66,4 @@ const Desktop = () => {
 	);
 };
 
-export default Desktop;
+export default App;
