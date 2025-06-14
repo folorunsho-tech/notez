@@ -9,18 +9,19 @@ import { AppContext, type Tag } from "../../contexts/NoteContext";
 import TopMenu from "../../components/TopMenu";
 import UnArchive from "../../components/modals/UnArchive";
 import { useParams } from "react-router";
+import { getDBNote } from "../../lib/db";
 
 const ArchiveV = () => {
 	const params = useParams();
 	const noteId = params.noteId || null;
-	const { getNoteArchive, getTags, loading } = useContext(AppContext);
+	const { getTags, loading } = useContext(AppContext);
 	const [title, setTitle] = useState<string | undefined>("");
 	const [ntags, setNTags] = useState<Tag[]>([]);
 	const [content, setContent] = useState<string | undefined>("");
 	const [date, setDate] = useState<string | number | Date>("");
 	const [mNote, setMNote] = useState<any>();
-	const getter = () => {
-		const note = getNoteArchive(noteId ?? "");
+	const getter = async () => {
+		const note = await getDBNote(noteId ?? "");
 		setMNote(note);
 		const tgs = note?.tags ? getTags(note?.tags) : [];
 		const newContent = `

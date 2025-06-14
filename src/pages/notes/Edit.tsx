@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
 	ActionIcon,
@@ -35,8 +36,9 @@ import { useNavigate, useParams } from "react-router";
 import TagsManager from "../../components/TagsManager";
 import Archive from "../../components/modals/Archive";
 import Delete from "../../components/modals/Delete";
-import { AppContext, type Note } from "../../contexts/NoteContext";
+import { AppContext } from "../../contexts/NoteContext";
 import TopMenu from "../../components/TopMenu";
+import { getDBNote } from "../../lib/db";
 
 const lowlight = createLowlight(common);
 
@@ -44,12 +46,12 @@ const Edit = () => {
 	const params = useParams();
 	const noteId = params.noteId || null;
 	const navigate = useNavigate();
-	const { tags, editNote, getNote, getTag, loading } = useContext(AppContext);
+	const { tags, editNote, getTag } = useContext(AppContext);
 	const [opened, { open, close }] = useDisclosure(false);
 	const [title, setTitle] = useState<string | undefined>("");
 	const [ntags, setNTags] = useState<string[]>([]);
 	const [econtent, setContent] = useState<string | undefined>("");
-	const [mNote, setMNote] = useState<Note | null>(null);
+	const [mNote, setMNote] = useState<any>(null);
 	const [value, setValue] = useState<string[]>([]);
 
 	const editor = useEditor({
@@ -71,17 +73,20 @@ const Edit = () => {
 		],
 		content: econtent,
 	});
+	const getter = async () => {
+		const note = await getDBNote(noteId ?? "");
+
+		setMNote(note);
+		setTitle(note?.title);
+		setContent(note?.content);
+		setNTags(note?.tags ?? []);
+		setValue(note?.tags ?? []);
+	};
 	useEffect(() => {
-		if (!loading) {
-			const note = getNote(noteId);
-			setMNote(note);
-			setTitle(note?.title);
-			setContent(note?.content);
-			setNTags(note?.tags ?? []);
-			setValue(note?.tags ?? []);
-		}
+		getter();
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [loading]);
+	}, []);
 	// Update editor content when econtent changes and editor is ready
 	useEffect(() => {
 		if (editor && econtent !== undefined) {

@@ -9,18 +9,19 @@ import { useState, useContext, useEffect } from "react";
 import { AppContext } from "../../contexts/NoteContext";
 import TopMenu from "../../components/TopMenu";
 import { useParams, Link } from "react-router";
+import { getDBNote } from "../../lib/db";
 
 const View = () => {
 	const params = useParams();
 	const noteId = params.noteId || null;
-	const { getNote, getTag, loading } = useContext(AppContext);
+	const { getTag } = useContext(AppContext);
 	const [title, setTitle] = useState<string | undefined>("");
 	const [ntags, setNTags] = useState<string[]>([]);
 	const [content, setContent] = useState<string | undefined>("");
 	const [date, setDate] = useState<string | number | Date>("");
 	const [mNote, setMNote] = useState<any>(null);
-	const getter = () => {
-		const note = getNote(noteId);
+	const getter = async () => {
+		const note = await getDBNote(noteId ?? "");
 		setMNote(note);
 		const newContent = `
 		<main style="font-family:sans-serif;">
@@ -33,9 +34,9 @@ const View = () => {
 		setDate(note?.updatedAt ? new Date(note.updatedAt) : "");
 	};
 	useEffect(() => {
-		if (!loading) getter();
+		getter();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [loading]);
+	}, []);
 	return (
 		<section className='flex w-full'>
 			<section className='flex flex-col gap-4 md:w-4/5 border-r p-3 border-gray-200 w-full'>
